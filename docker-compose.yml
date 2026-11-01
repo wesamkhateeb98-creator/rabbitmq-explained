@@ -1,0 +1,36 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4.1-management
+    container_name: rabbitmq
+    hostname: rabbitmq                # fixed node name: rabbit@rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI: http://localhost:15672 (guest / guest)
+      - "15692:15692"   # Prometheus metrics: http://localhost:15692/metrics
+      - "5552:5552"     # Stream protocol (docs/27)
+      - "1883:1883"     # MQTT (docs/30)
+    volumes:
+      - ./config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./config/rabbitmq.conf:/etc/rabbitmq/conf.d/30-demo.conf:ro
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Topology visualizer: prints vhosts -> exchanges -> bindings -> queues -> consumers, then exits.
+  #   docker compose logs rabtap        output from startup
+  #   docker compose run --rm rabtap    fresh snapshot after running an example
+  # Graph: docker compose run --rm rabtap info --show-default --format=dot > broker.dot
+  #        then: dot -Tsvg broker.dot > broker.svg  (needs Graphviz)
+  rabtap:
+    image: ghcr.io/jandelgado/rabtap:latest
+    container_name: rabtap
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABTAP_APIURI: http://guest:guest@rabbitmq:15672/api
+      NO_COLOR: "1"
+    command: ["info", "--consumers", "--show-default"]
+    restart: "no"

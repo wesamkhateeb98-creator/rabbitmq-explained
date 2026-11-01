@@ -1,0 +1,51 @@
+# Shovel: every message in rabbit1's queue "jobs" is moved to rabbit2's queue "jobs"
+# Two independent brokers (not a cluster); the shovel is configured in rabbit2/definitions.json, no code.
+#   start : docker compose -f examples/28-federation-shovel/shovel/docker-compose.yml up -d --wait
+#   run   : dotnet run --project examples/28-federation-shovel/shovel
+#   stop  : docker compose -f examples/28-federation-shovel/shovel/docker-compose.yml down
+#
+#   rabbit1/definitions.json : user admin, queue jobs
+#   rabbit2/definitions.json : user admin, queue jobs, shovel "rabbit1-to-rabbit2" (rabbit1 jobs -> local jobs)
+
+services:
+  # source: the producer publishes here
+  rabbit1:
+    image: rabbitmq:4.1-management
+    # hostname: the shovel on rabbit2 reaches it as amqp://admin:admin@rabbit1
+    hostname: rabbit1
+    volumes:
+      # turn on the shovel plugin (+ management)
+      - ../../../config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      # tell RabbitMQ to import /etc/rabbitmq/definitions.json at boot
+      - ./load-definitions.conf:/etc/rabbitmq/conf.d/20-definitions.conf:ro
+      # this broker's definitions (user admin, because guest can't log in from another host)
+      - ./rabbit1/definitions.json:/etc/rabbitmq/definitions.json:ro
+    # host 5721 -> AMQP, 15721 -> management UI
+    ports: ["5721:5672", "15721:15672"]
+    # healthy = the broker accepts connections
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  # destination: owns the shovel, the consumer reads here
+  rabbit2:
+    image: rabbitmq:4.1-management
+    hostname: rabbit2
+    volumes:
+      - ../../../config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./load-definitions.conf:/etc/rabbitmq/conf.d/20-definitions.conf:ro
+      # the shovel lives here
+      - ./rabbit2/definitions.json:/etc/rabbitmq/definitions.json:ro
+    ports: ["5722:5672", "15722:15672"]
+    # start after rabbit1 is reachable, so the shovel connects on the first try
+    depends_on:
+      rabbit1:
+        condition: service_healthy
+    # healthy = the shovel is running (up --wait waits for this)
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl -q shovel_status | grep -q running"]
+      interval: 5s
+      timeout: 10s
+      retries: 30

@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/examples/">
+    <Project Path="examples/01-what-is-rabbitmq/01-what-is-rabbitmq.csproj" />
+    <Project Path="examples/02-amqp-model/02-amqp-model.csproj" />
+    <Project Path="examples/03-connection-channel/03-connection-channel.csproj" />
+    <Project Path="examples/04-hello-world/04-hello-world.csproj" />
+    <Project Path="examples/05-work-queues/05-work-queues.csproj" />
+    <Project Path="examples/06-exchanges-fanout/06-exchanges-fanout.csproj" />
+    <Project Path="examples/07-exchanges-direct/07-exchanges-direct.csproj" />
+    <Project Path="examples/08-exchanges-topic/08-exchanges-topic.csproj" />
+    <Project Path="examples/09-exchanges-headers/09-exchanges-headers.csproj" />
+    <Project Path="examples/10-rpc/10-rpc.csproj" />
+    <Project Path="examples/11-default-exchange/11-default-exchange.csproj" />
+    <Project Path="examples/12-acks-prefetch/12-acks-prefetch.csproj" />
+    <Project Path="examples/13-publisher-confirms/13-publisher-confirms.csproj" />
+    <Project Path="examples/14-durability/14-durability.csproj" />
+    <Project Path="examples/15-ttl-dlx/15-ttl-dlx.csproj" />
+    <Project Path="examples/16-retry-delay/16-retry-delay.csproj" />
+    <Project Path="examples/17-idempotency/17-idempotency.csproj" />
+    <Project Path="examples/18-quorum-queues/18-quorum-queues.csproj" />
+    <Project Path="examples/19-streams/19-streams.csproj" />
+    <Project Path="examples/20-clustering/20-clustering.csproj" />
+    <Project Path="examples/21-monitoring-security/21-monitoring-security.csproj" />
+    <Project Path="examples/23-internals/23-internals.csproj" />
+    <Project Path="examples/24-alarms-flow-control/24-alarms-flow-control.csproj" />
+    <Project Path="examples/25-policies-routing/25-policies-routing.csproj" />
+    <Project Path="examples/26-consumer-features/26-consumer-features.csproj" />
+    <Project Path="examples/27-stream-protocol/27-stream-protocol.csproj" />
+    <Project Path="examples/28-federation-shovel/federate/28-federate.csproj" />
+    <Project Path="examples/28-federation-shovel/shovel/28-shovel.csproj" />
+    <Project Path="examples/29-performance/29-performance.csproj" />
+    <Project Path="examples/30-amqp10-mqtt/30-amqp10-mqtt.csproj" />
+  </Folder>
+</Solution>

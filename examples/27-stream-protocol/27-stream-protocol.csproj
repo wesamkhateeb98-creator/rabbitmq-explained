@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="RabbitMQ.Stream.Client" Version="1.12.2" />
+  </ItemGroup>
+</Project>

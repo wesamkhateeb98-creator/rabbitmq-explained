@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.user

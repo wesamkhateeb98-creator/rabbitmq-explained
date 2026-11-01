@@ -1,0 +1,18 @@
+{
+  "users": [
+    { "name": "admin", "password_hash": "3vqb4NgodEpEfxoY/QrFJNyvvpOMdHVbapRmIRwmBBqrs9Ty", "hashing_algorithm": "rabbit_password_hashing_sha256", "tags": ["administrator"] }
+  ],
+  "vhosts": [{ "name": "/" }],
+  "permissions": [
+    { "user": "admin", "vhost": "/", "configure": ".*", "write": ".*", "read": ".*" }
+  ],
+  "queues": [
+    { "name": "jobs", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {} }
+  ],
+  "parameters": [
+    { "component": "shovel", "vhost": "/", "name": "rabbit1-to-rabbit2", "value": {
+        "src-protocol": "amqp091", "src-uri": "amqp://admin:admin@rabbit1", "src-queue": "jobs",
+        "dest-protocol": "amqp091", "dest-uri": "amqp://", "dest-queue": "jobs"
+    } }
+  ]
+}

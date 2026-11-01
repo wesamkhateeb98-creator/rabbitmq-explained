@@ -1,0 +1,365 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "01-what-is-rabbitmq",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/01-what-is-rabbitmq/bin/Debug/net10.0/01-what-is-rabbitmq.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/01-what-is-rabbitmq",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "02-amqp-model",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/02-amqp-model/bin/Debug/net10.0/02-amqp-model.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/02-amqp-model",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "03-connection-channel",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/03-connection-channel/bin/Debug/net10.0/03-connection-channel.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/03-connection-channel",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "04-hello-world",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/04-hello-world/bin/Debug/net10.0/04-hello-world.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/04-hello-world",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "05-work-queues",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/05-work-queues/bin/Debug/net10.0/05-work-queues.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/05-work-queues",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "06-exchanges-fanout",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/06-exchanges-fanout/bin/Debug/net10.0/06-exchanges-fanout.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/06-exchanges-fanout",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "07-exchanges-direct",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/07-exchanges-direct/bin/Debug/net10.0/07-exchanges-direct.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/07-exchanges-direct",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "08-exchanges-topic",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/08-exchanges-topic/bin/Debug/net10.0/08-exchanges-topic.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/08-exchanges-topic",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "09-exchanges-headers",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/09-exchanges-headers/bin/Debug/net10.0/09-exchanges-headers.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/09-exchanges-headers",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "10-rpc",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/10-rpc/bin/Debug/net10.0/10-rpc.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/10-rpc",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "11-default-exchange",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/11-default-exchange/bin/Debug/net10.0/11-default-exchange.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/11-default-exchange",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "12-acks-prefetch",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/12-acks-prefetch/bin/Debug/net10.0/12-acks-prefetch.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/12-acks-prefetch",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "13-publisher-confirms",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/13-publisher-confirms/bin/Debug/net10.0/13-publisher-confirms.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/13-publisher-confirms",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "14-durability (publish)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/14-durability/bin/Debug/net10.0/14-durability.dll",
+      "args": [
+        "publish"
+      ],
+      "cwd": "${workspaceFolder}/examples/14-durability",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "14-durability (check)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/14-durability/bin/Debug/net10.0/14-durability.dll",
+      "args": [
+        "check"
+      ],
+      "cwd": "${workspaceFolder}/examples/14-durability",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "15-ttl-dlx",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/15-ttl-dlx/bin/Debug/net10.0/15-ttl-dlx.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/15-ttl-dlx",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "16-retry-delay",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/16-retry-delay/bin/Debug/net10.0/16-retry-delay.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/16-retry-delay",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "17-idempotency",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/17-idempotency/bin/Debug/net10.0/17-idempotency.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/17-idempotency",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "18-quorum-queues",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/18-quorum-queues/bin/Debug/net10.0/18-quorum-queues.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/18-quorum-queues",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "19-streams",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/19-streams/bin/Debug/net10.0/19-streams.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/19-streams",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "20-clustering (publish)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/20-clustering/bin/Debug/net10.0/20-clustering.dll",
+      "args": [
+        "publish"
+      ],
+      "cwd": "${workspaceFolder}/examples/20-clustering",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "20-clustering (consume)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/20-clustering/bin/Debug/net10.0/20-clustering.dll",
+      "args": [
+        "consume"
+      ],
+      "cwd": "${workspaceFolder}/examples/20-clustering",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "21-monitoring-security",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/21-monitoring-security/bin/Debug/net10.0/21-monitoring-security.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/21-monitoring-security",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "23-internals",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/23-internals/bin/Debug/net10.0/23-internals.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/23-internals",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "24-alarms-flow-control",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/24-alarms-flow-control/bin/Debug/net10.0/24-alarms-flow-control.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/24-alarms-flow-control",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "25-policies-routing",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/25-policies-routing/bin/Debug/net10.0/25-policies-routing.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/25-policies-routing",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "26-consumer-features",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/26-consumer-features/bin/Debug/net10.0/26-consumer-features.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/26-consumer-features",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "27-stream-protocol",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/27-stream-protocol/bin/Debug/net10.0/27-stream-protocol.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/27-stream-protocol",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "28-federate",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/28-federation-shovel/federate/bin/Debug/net10.0/28-federate.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/28-federation-shovel/federate",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "28-shovel",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/28-federation-shovel/shovel/bin/Debug/net10.0/28-shovel.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/28-federation-shovel/shovel",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "29-performance",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/29-performance/bin/Debug/net10.0/29-performance.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/29-performance",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "30-amqp10-mqtt",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples/30-amqp10-mqtt/bin/Debug/net10.0/30-amqp10-mqtt.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/30-amqp10-mqtt",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    }
+  ]
+}

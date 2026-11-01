@@ -1,0 +1,44 @@
+# Scale out on ONE host: 3 RabbitMQ nodes = 3 containers on the same machine
+#   start : docker compose -f examples/20-clustering/one-host/docker-compose.yml up -d
+#   check : docker exec rabbit1 rabbitmqctl cluster_status
+#   stop  : docker compose -f examples/20-clustering/one-host/docker-compose.yml down
+# Good for learning and tests; NOT high availability (one machine down = whole cluster down).
+
+# shared settings for every node (YAML anchor, copied below with <<: *node)
+x-node: &node
+  image: rabbitmq:4.1-management
+  environment:
+    # every node (and the CLI tools) must share the same Erlang cookie; demo value only
+    RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-setcookie demo-cluster-cookie"
+    RABBITMQ_CTL_ERL_ARGS: "-setcookie demo-cluster-cookie"
+  volumes:
+    # the list of the 3 node names, read at first start to form the cluster
+    - ./cluster.conf:/etc/rabbitmq/conf.d/20-cluster.conf:ro
+
+services:
+  rabbit1:
+    <<: *node
+    # hostname -> node name rabbit@rabbit1 (must match cluster.conf)
+    hostname: rabbit1
+    container_name: rabbit1
+    # host 5681 -> AMQP 5672; host 15681 -> management UI (only on this node)
+    ports: ["5681:5672", "15681:15672"]
+
+  rabbit2:
+    <<: *node
+    hostname: rabbit2
+    container_name: rabbit2
+    # every node needs its own host port, because they share one machine
+    ports: ["5682:5672"]
+
+  rabbit3:
+    <<: *node
+    hostname: rabbit3
+    container_name: rabbit3
+    ports: ["5683:5672"]
+
+  # scale out = copy one more block (rabbit4, hostname rabbit4, port 5684)
+  # and add "nodes.4 = rabbit@rabbit4" to cluster.conf
+
+# nodes talk to each other on the compose network: epmd 4369 + inter-node 25672,
+# no need to publish those ports on the host

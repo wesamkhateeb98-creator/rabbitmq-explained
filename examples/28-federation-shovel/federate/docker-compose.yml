@@ -1,0 +1,52 @@
+# Federation: rabbit2's exchange "orders" receives what is published to rabbit1's exchange "orders"
+# Two independent brokers (not a cluster); the link is configured in rabbit2/definitions.json, no code.
+#   start : docker compose -f examples/28-federation-shovel/federate/docker-compose.yml up -d --wait
+#   run   : dotnet run --project examples/28-federation-shovel/federate
+#   stop  : docker compose -f examples/28-federation-shovel/federate/docker-compose.yml down
+#
+#   rabbit1/definitions.json : user admin, exchange orders
+#   rabbit2/definitions.json : user admin, exchange orders, queue orders.copy bound "order.*",
+#                              federation upstream "rabbit1" + policy "federate-orders" (exchange ^orders$)
+
+services:
+  # upstream: the producer publishes here
+  rabbit1:
+    image: rabbitmq:4.1-management
+    # hostname: rabbit2 reaches it as amqp://admin:admin@rabbit1
+    hostname: rabbit1
+    volumes:
+      # turn on the federation plugin (+ management)
+      - ../../../config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      # tell RabbitMQ to import /etc/rabbitmq/definitions.json at boot
+      - ./load-definitions.conf:/etc/rabbitmq/conf.d/20-definitions.conf:ro
+      # this broker's definitions (user admin, because guest can't log in from another host)
+      - ./rabbit1/definitions.json:/etc/rabbitmq/definitions.json:ro
+    # host 5711 -> AMQP, 15711 -> management UI
+    ports: ["5711:5672", "15711:15672"]
+    # healthy = the broker accepts connections
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  # downstream: owns the link, pulls from rabbit1, the consumer reads here
+  rabbit2:
+    image: rabbitmq:4.1-management
+    hostname: rabbit2
+    volumes:
+      - ../../../config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./load-definitions.conf:/etc/rabbitmq/conf.d/20-definitions.conf:ro
+      # federation upstream + policy live here
+      - ./rabbit2/definitions.json:/etc/rabbitmq/definitions.json:ro
+    ports: ["5712:5672", "15712:15672"]
+    # start after rabbit1 is reachable, so the link connects on the first try
+    depends_on:
+      rabbit1:
+        condition: service_healthy
+    # healthy = the federation link is running (up --wait waits for this)
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl -q federation_status | grep -q running"]
+      interval: 5s
+      timeout: 10s
+      retries: 30

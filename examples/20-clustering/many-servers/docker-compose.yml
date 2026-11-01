@@ -1,0 +1,39 @@
+# Scale out on MANY servers: 1 RabbitMQ node per server, 3 servers = 3-node cluster
+# The SAME file runs on every server (server1, server2, server3):
+#   1) copy this folder to each server
+#   2) on each server: add the 3 servers to /etc/hosts (or DNS), e.g.
+#        10.0.0.11 server1
+#        10.0.0.12 server2
+#        10.0.0.13 server3
+#   3) firewall between the 3 servers: open 4369 (epmd) and 25672 (inter-node)
+#      firewall from the app servers: open 5672 (AMQP) and 15672 (management UI)
+#   4) on each server: RABBITMQ_COOKIE=<same secret> docker compose up -d
+#   5) check on any server: docker exec rabbitmq rabbitmqctl cluster_status
+# Clients connect to server1:5672, server2:5672, server3:5672 (one endpoint per server).
+# Servers must be in the same data center (LAN); across regions use Federation/Shovel (doc 28).
+
+services:
+  rabbitmq:
+    image: rabbitmq:4.1-management
+    container_name: rabbitmq
+    # host network: the container uses the server's real hostname (server1, ...),
+    # its /etc/hosts and its ports (5672, 15672, 4369, 25672) directly, no mapping
+    network_mode: host
+    environment:
+      # same Erlang cookie on every server, else the nodes refuse each other;
+      # pass it from the shell or a .env file, never commit the real value
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-setcookie ${RABBITMQ_COOKIE:?set RABBITMQ_COOKIE}"
+      RABBITMQ_CTL_ERL_ARGS: "-setcookie ${RABBITMQ_COOKIE:?set RABBITMQ_COOKIE}"
+    volumes:
+      # the list of the 3 node names
+      - ./cluster.conf:/etc/rabbitmq/conf.d/20-cluster.conf:ro
+      # keep data on the server's disk: a restarted node rejoins with its queues
+      - rabbitmq-data:/var/lib/rabbitmq
+    # restart the node after a crash or a server reboot
+    restart: unless-stopped
+
+volumes:
+  rabbitmq-data:
+
+# scale out = a 4th server with this same file, plus "nodes.4 = rabbit@server4" in cluster.conf
+# and server4 in /etc/hosts on every server (use an odd count: 3, 5, 7 for quorum majorities)

@@ -1,0 +1,12 @@
+{
+  "users": [
+    { "name": "admin", "password_hash": "3vqb4NgodEpEfxoY/QrFJNyvvpOMdHVbapRmIRwmBBqrs9Ty", "hashing_algorithm": "rabbit_password_hashing_sha256", "tags": ["administrator"] }
+  ],
+  "vhosts": [{ "name": "/" }],
+  "permissions": [
+    { "user": "admin", "vhost": "/", "configure": ".*", "write": ".*", "read": ".*" }
+  ],
+  "queues": [
+    { "name": "jobs", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {} }
+  ]
+}
