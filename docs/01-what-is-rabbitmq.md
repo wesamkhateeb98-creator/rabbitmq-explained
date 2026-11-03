@@ -6,22 +6,17 @@
 
 ## Example
 
-```
-Initial data:
-  queue 'orders'          : empty
-  consumer                : offline
+Timeline: the queue holds orders while the consumer is offline.
 
-Commands:
-  producer sends          : order-1: 2 x keyboard
-  producer sends          : order-2: 1 x monitor
-  producer sends          : order-3: 3 x mouse
-  check queue             : 3 messages, 0 consumers
-  consumer starts         : receives order-1, order-2, order-3
+| t | Event | Queue `orders` | Consumers |
+|---|---|---|---|
+| 0 | Start | `[]` | 0 (offline) |
+| 1 | Producer sends `order-1: 2 x keyboard` | `[order-1]` | 0 |
+| 2 | Producer sends `order-2: 1 x monitor` | `[order-1, order-2]` | 0 |
+| 3 | Producer sends `order-3: 3 x mouse` | `[order-1, order-2, order-3]` | 0 |
+| 4 | Consumer starts, receives all 3 | `[]` | 1 |
 
-Result:
-  lost orders             : 0 (the broker held them while the consumer was offline)
-  producer waited for consumer : no
-```
+Lost orders: **0**. The producer never waited for the consumer.
 
 ## Diagram
 

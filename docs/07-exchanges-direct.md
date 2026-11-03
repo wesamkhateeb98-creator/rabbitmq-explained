@@ -6,23 +6,16 @@
 
 ## Example
 
-```
-Initial data:
-  exchange 'logs'         : direct
-  logs.errors bound to    : error
-  logs.all bound to       : info, warning, error
+Routing table: exchange `logs` (direct). A queue gets the message only when its binding key **equals** the routing key.
 
-Commands:
-  publish key 'info'      : "disk 40%"
-  publish key 'warning'   : "disk 85%"
-  publish key 'error'     : "disk full"
-  publish key 'debug'     : "cache hit"
+| Routing key | Body | `logs.errors` (binds `error`) | `logs.all` (binds `info`, `warning`, `error`) |
+|---|---|---|---|
+| `info` | disk 40% | ❌ | ✅ |
+| `warning` | disk 85% | ❌ | ✅ |
+| `error` | disk full | ✅ | ✅ |
+| `debug` | cache hit | ❌ | ❌ → dropped |
 
-Result:
-  logs.errors             : [error] disk full
-  logs.all                : [info] disk 40%, [warning] disk 85%, [error] disk full
-  'debug'                 : no binding -> dropped
-```
+Result: `logs.errors` = 1 message, `logs.all` = 3 messages.
 
 ## Diagram
 

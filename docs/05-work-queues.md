@@ -6,19 +6,22 @@
 
 ## Example
 
-```
-Initial data:
-  queue 'tasks'           : empty
-  workers                 : worker-A, worker-B (manual ack, 100 ms per task)
+Round-robin dispatch of `task-1..task-6` to 2 workers (manual ack, 100 ms per task).
 
-Commands:
-  publish                 : task-1 .. task-6
-
-Result:
-  worker-A                : task-1, task-3, task-5
-  worker-B                : task-2, task-4, task-6
-  dispatch                : round-robin, 3 tasks each
 ```
+worker = workers[(n - 1) % 2]      // n = task number
+```
+
+| Task | n | (n - 1) % 2 | Worker |
+|---|---|---|---|
+| task-1 | 1 | 0 | A |
+| task-2 | 2 | 1 | B |
+| task-3 | 3 | 0 | A |
+| task-4 | 4 | 1 | B |
+| task-5 | 5 | 0 | A |
+| task-6 | 6 | 1 | B |
+
+Result: worker-A gets 3, worker-B gets 3.
 
 ## Diagram
 

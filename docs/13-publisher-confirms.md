@@ -6,23 +6,23 @@
 
 ## Example
 
-```
-Initial data:
-  queue 'confirms'        : durable
-  queue 'confirms.full'   : x-max-length = 2, x-overflow = reject-publish
+Broker answer per publish.
 
-Commands:
-  publish m1 -> confirms                  : ack
-  publish f1, f2 -> confirms.full         : ack, ack
-  publish f3 -> confirms.full (full)      : nack (PublishException, seq 4)
-  publish mandatory -> 'no-such-queue'    : returned 312 NO_ROUTE
-  2000 publishes, await each confirm      : 1421 ms
-  2000 publishes, await as one batch      : 86 ms
+| Publish | Target | Broker answer |
+|---|---|---|
+| `m1` | `confirms` | ack |
+| `f1`, `f2` | `confirms.full` (`x-max-length = 2`) | ack, ack |
+| `f3` | `confirms.full` (full, `x-overflow = reject-publish`) | **nack** → `PublishException`, seq 4 |
+| mandatory | `no-such-queue` | returned `312 NO_ROUTE` |
 
-Result:
-  speed-up from batching  : 1421 / 86 ≈ 16.5x
-  queue 'confirms'        : 1 + 2000 + 2000 = 4001 messages
-```
+Cost of waiting for confirms, 2000 publishes:
+
+| Strategy | Total | Per message | Speed-up |
+|---|---|---|---|
+| Await each confirm | 1421 ms | 0.71 ms | 1× |
+| Await as one batch | 86 ms | 0.043 ms | **16.5×** |
+
+Queue `confirms` ends with 1 + 2000 + 2000 = **4001** messages.
 
 ## Diagram
 

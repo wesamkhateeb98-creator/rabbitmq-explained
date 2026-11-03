@@ -6,21 +6,14 @@
 
 ## Example
 
-```
-Initial data:
-  exchange 'shop'         : type direct
-  queue 'billing'         : empty
-  binding                 : shop --[order.created]--> billing
+Routing: exchange `shop` (direct) has one binding, `shop --[order.created]--> billing`.
 
-Commands:
-  publish key 'order.created'   body 'order #1' : matches binding -> billing
-  publish key 'order.cancelled' body 'order #2' : no binding -> returned 312 NO_ROUTE (mandatory: true)
-  consumer reads 'billing'      : 'order #1'
+| Publish | Routing key | Matches binding? | Result |
+|---|---|---|---|
+| `order #1` | `order.created` | ✅ yes | Stored in `billing` → consumer reads it → `billing` holds 0 |
+| `order #2` | `order.cancelled` | ❌ no | `mandatory: true` → returned `312 NO_ROUTE` (without `mandatory`: dropped silently) |
 
-Result:
-  billing                 : got 1 message, now holds 0
-  order #2                : never stored (dropped silently without mandatory)
-```
+`order #2` is never stored: an exchange keeps nothing, it only routes.
 
 ## Diagram
 

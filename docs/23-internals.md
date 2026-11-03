@@ -6,21 +6,21 @@
 
 ## Example
 
-```
-Initial data:
-  node                    : rabbit@rabbitmq, 493 Erlang processes at idle
+Erlang process count on node `rabbit@rabbitmq`.
 
-Commands:
-  open 1 connection       : 501 processes (+8)
-  open 50 channels        : 701 processes (+200 = 4 per channel)
-  declare 10 queues       : 721 processes (+20 = 2 per queue)
-  publish 1000 x 100 B persistent   : queue indexes 20 -> 352 KB, message store 4 -> 4 KB
-  publish 1000 x 10 KB persistent   : message store 4 -> 9988 KB, queue indexes 352 -> 384 KB
+| Action | Processes | Δ | Per item |
+|---|---|---|---|
+| Idle | 493 | | |
+| Open 1 connection | 501 | +8 | 8 per connection |
+| Open 50 channels | 701 | +200 | 4 per channel |
+| Declare 10 queues | 721 | +20 | 2 per queue |
 
-Result:
-  100 B messages          : stored inside the queue index (below the 4096-byte embed limit)
-  10 KB messages          : stored in the shared msg_store_persistent (1000 x 10 KB ≈ 9.8 MB)
-```
+Where 1000 persistent messages are stored:
+
+| Body size | Queue indexes | Message store | Stored in |
+|---|---|---|---|
+| 100 B | 20 → 352 KB | 4 → 4 KB | Queue index (below the 4096-byte embed limit) |
+| 10 KB | 352 → 384 KB | 4 → 9988 KB | Shared `msg_store_persistent` (1000 × 10 KB ≈ 9.8 MB) |
 
 ## Diagram
 

@@ -6,26 +6,27 @@
 
 ## Example
 
+Part A, layout: stream `orders.stream`, consumer `billing` stores its offset on the server.
+
 ```
-Initial data:
-  stream 'orders.stream'  : max-age 7 days
-  super stream 'invoices' : partitions invoices-0, invoices-1, invoices-2
-
-Commands (Part A, offset tracking):
-  produce                 : order-0 .. order-4 (5 confirms)
-  consumer 'billing'      : reads offsets 0, 1, 2, then StoreOffset(2), then stops
-  QueryOffset('billing')  : 2
-  consumer restarts       : from offset 2 + 1, reads order-3 @3, order-4 @4
-
-Commands (Part B, super stream):
-  produce invoice-0..7    : routing key = MessageId = customer-(i % 4)
-
-Result:
-  invoices-0              : customer-2 (invoice-2, invoice-6)
-  invoices-1              : customer-0 and customer-3 (invoice-0, 3, 4, 7)
-  invoices-2              : customer-1 (invoice-1, invoice-5)
-  same customer           : always the same partition, so ordering per customer is kept
+offset:      0         1         2         3         4
+          ┌─────────┬─────────┬─────────┬─────────┬─────────┐
+          │ order-0 │ order-1 │ order-2 │ order-3 │ order-4 │
+          └─────────┴─────────┴─────────┴─────────┴─────────┘
+run 1     ▲─────────────────────────────▶ StoreOffset(2), stop
+                                        │ QueryOffset('billing') = 2
+run 2                                   └──▶ start at 2 + 1: order-3 @3, order-4 @4
 ```
+
+Part B: super stream `invoices`, routing key = `MessageId` = `customer-(i % 4)`.
+
+| Partition | Customers | Invoices |
+|---|---|---|
+| `invoices-0` | customer-2 | invoice-2, invoice-6 |
+| `invoices-1` | customer-0, customer-3 | invoice-0, 3, 4, 7 |
+| `invoices-2` | customer-1 | invoice-1, invoice-5 |
+
+Same customer → same partition, so order per customer is kept.
 
 ## Diagram
 

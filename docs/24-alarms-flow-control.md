@@ -6,27 +6,22 @@
 
 ## Example
 
-```
-Initial data:
-  queue 'alarms'          : durable
-  memory watermark        : 0.6 (default)
-  disk free limit         : 50 MB (default), disk free: 78.6 GB
+Timeline: queue `alarms`, memory watermark 0.6, disk free limit 50 MB (disk free: 78.6 GB).
 
-Commands:
-     85 ms  publish 1                        : confirmed after 36 ms
-  set_vm_memory_high_watermark absolute 1MB
-   1009 ms  publish 2                        : waits ...
-   1012 ms  EVENT connection.blocked         : "low on memory", state = blocked
-  set_vm_memory_high_watermark 0.6
-   5794 ms  EVENT connection.unblocked       : publish 2 confirmed (waited 4786 ms)
-  set_disk_free_limit 1000GB
-   6809 ms  EVENT connection.blocked         : "low on disk"
-  set_disk_free_limit 50MB
-   7634 ms  EVENT connection.unblocked       : publish 3 confirmed (waited 826 ms)
+| t | Event | Connection | Publish |
+|---|---|---|---|
+| 85 ms | Publish 1 | running | confirmed after 36 ms |
+| | `set_vm_memory_high_watermark absolute 1MB` | | |
+| 1009 ms | Publish 2 | running | waits ... |
+| 1012 ms | `connection.blocked` "low on memory" | **blocked** | |
+| | `set_vm_memory_high_watermark 0.6` | | |
+| 5794 ms | `connection.unblocked` | running | publish 2 confirmed (waited 4786 ms) |
+| | `set_disk_free_limit 1000GB` | | |
+| 6809 ms | `connection.blocked` "low on disk" | **blocked** | publish 3 waits |
+| | `set_disk_free_limit 50MB` | | |
+| 7634 ms | `connection.unblocked` | running | publish 3 confirmed (waited 826 ms) |
 
-Result:
-  queue 'alarms'          : 3 messages (delayed, not lost)
-```
+Queue `alarms` ends with 3 messages: delayed, not lost.
 
 ## Diagram
 

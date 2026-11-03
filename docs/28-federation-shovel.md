@@ -38,26 +38,14 @@ Each folder has the same files:
 
 ### Example
 
-```
-Initial data (imported at boot from definitions.json):
-  rabbit1                 : exchange orders (topic)
-  rabbit2                 : exchange orders (topic), queue orders.copy bound "order.*"
-  rabbit2 link            : upstream "rabbit1" = amqp://admin:admin@rabbit1
-                            policy federate-orders: exchange ^orders$ -> federation-upstream rabbit1
-  rabbit1 (automatic)     : queue "federation: orders -> rabbit@rabbit2", bound "order.*", 1 consumer (rabbit2)
+Routing table: published to `rabbit1` exchange `orders`. Federation forwards only keys that `rabbit2` has bindings for (`order.*` → `orders.copy`); `rabbit1` holds the link queue `federation: orders -> rabbit@rabbit2`.
 
-Commands (publish to rabbit1, exchange orders):
-  order.created           : order-1
-  order.paid              : order-1
-  payment.failed          : card-7
-  order.created           : order-2
-
-Result (read from rabbit2, queue orders.copy):
-  order.created           : order-1
-  order.paid              : order-1
-  order.created           : order-2
-  payment.failed          : never crossed (rabbit2 has no binding for it; rabbit1 dropped it)
-```
+| Routing key | Body | Matches `order.*`? | In `rabbit2` `orders.copy`? |
+|---|---|---|---|
+| `order.created` | order-1 | ✅ | ✅ |
+| `order.paid` | order-1 | ✅ | ✅ |
+| `payment.failed` | card-7 | ❌ | ❌ never crossed (dropped on `rabbit1`) |
+| `order.created` | order-2 | ✅ | ✅ |
 
 ### Diagram
 
@@ -171,20 +159,12 @@ $ docker compose -f examples/28-federation-shovel/federate/docker-compose.yml do
 
 ### Example
 
-```
-Initial data (imported at boot from definitions.json):
-  rabbit1                 : queue jobs
-  rabbit2                 : queue jobs
-  rabbit2 shovel          : rabbit1-to-rabbit2: src amqp://admin:admin@rabbit1 queue jobs -> dest amqp:// queue jobs
-  rabbit1 queue jobs      : 1 consumer (the shovel)
+Before/after: shovel `rabbit1-to-rabbit2` consumes `rabbit1` queue `jobs` and republishes to `rabbit2` queue `jobs`.
 
-Commands (publish to rabbit1, queue jobs):
-  publish                 : job-1, job-2, job-3
-
-Result:
-  rabbit1 jobs            : 0 messages (moved, not copied)
-  rabbit2 jobs            : job-1, job-2, job-3
-```
+| Queue | Before | After publishing `job-1, job-2, job-3` to `rabbit1` |
+|---|---|---|
+| `rabbit1` `jobs` | `[]`, 1 consumer (the shovel) | `[]` (moved, not copied) |
+| `rabbit2` `jobs` | `[]` | `[job-1, job-2, job-3]` |
 
 ### Diagram
 

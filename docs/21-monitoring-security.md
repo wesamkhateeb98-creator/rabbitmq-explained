@@ -6,21 +6,22 @@
 
 ## Example
 
-```
-Initial data:
-  broker                  : RabbitMQ 4.1.8, Erlang 27.3.4.19
-  vhost 'shop'            : new
-  user 'shop-app'         : configure ^app\.  write ^(app\..*|amq\.default)$  read ^app\.
+Permission checks: user `shop-app` in vhost `shop` (RabbitMQ 4.1.8, Erlang 27.3.4.19).
 
-Commands:
-  shop-app declares 'app.orders'  : ok, publishes 3
-  prometheus /metrics             : rabbitmq_connections 1, rabbitmq_queues 10, rabbitmq_queue_messages_ready 7
-  shop-app declares 'orders'      : 403 ACCESS_REFUSED (configure)
-  management API /api/queues/shop : app.orders, messages 3, type classic
+| Action | Permission checked | Regex | Result |
+|---|---|---|---|
+| Declare `app.orders` | configure | `^app\.` | ✅ |
+| Publish 3 to `app.orders` (via `amq.default`) | write | `^(app\..*\|amq\.default)$` | ✅ |
+| Declare `orders` | configure | `^app\.` | ❌ `403 ACCESS_REFUSED` |
 
-Result:
-  the app can only touch names starting with 'app.' inside vhost 'shop'
-```
+What monitoring sees afterwards:
+
+| Source | Value |
+|---|---|
+| Prometheus `rabbitmq_connections` | 1 |
+| Prometheus `rabbitmq_queues` | 10 |
+| Prometheus `rabbitmq_queue_messages_ready` | 7 |
+| Management API `/api/queues/shop` | `app.orders`, messages 3, type classic |
 
 The Prometheus totals cover the whole broker, including queues left over from earlier examples.
 

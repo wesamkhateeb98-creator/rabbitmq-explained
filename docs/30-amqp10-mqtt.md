@@ -11,26 +11,15 @@ All of them share the same exchanges and queues.
 
 ## Example
 
-```
-Initial data:
-  amqp10.orders           : quorum queue, declared over AMQP 1.0
-  mqtt.readings           : bound to amq.topic with 'sensors.*.temp'
+Mapping table: one broker, three protocols. MQTT `/` ↔ AMQP `.`
 
-Commands (Part A, AMQP 1.0 -> AMQP 0-9-1):
-  AMQP 1.0 publish order-1, order-2 : outcome Accepted, Accepted
-  AMQP 0-9-1 BasicGet               : 'order-1', 'order-2'
-
-Commands (Part B, MQTT <-> AMQP 0-9-1):
-  MQTT publish sensors/room1/temp     = 21.5
-  MQTT publish sensors/room2/temp     = 23.0
-  MQTT publish sensors/room1/humidity = 40
-  AMQP 0-9-1 publish amq.topic 'alerts.fire.floor2' = evacuate
-
-Result:
-  mqtt.readings           : key 'sensors.room1.temp' 21.5, key 'sensors.room2.temp' 23.0 (humidity not bound)
-  MQTT subscriber alerts/#: topic 'alerts/fire/floor2' payload 'evacuate'
-  topic mapping           : MQTT '/' <-> AMQP '.'
-```
+| Sender | Sent | Receiver | Received |
+|---|---|---|---|
+| AMQP 1.0 | `order-1`, `order-2` → `amqp10.orders` (quorum) | AMQP 0-9-1 `BasicGet` | `order-1`, `order-2` (outcome: Accepted, Accepted) |
+| MQTT | `sensors/room1/temp` = 21.5 | `mqtt.readings` (binds `sensors.*.temp` on `amq.topic`) | key `sensors.room1.temp`, 21.5 |
+| MQTT | `sensors/room2/temp` = 23.0 | `mqtt.readings` | key `sensors.room2.temp`, 23.0 |
+| MQTT | `sensors/room1/humidity` = 40 | `mqtt.readings` | ❌ not bound |
+| AMQP 0-9-1 | `amq.topic`, key `alerts.fire.floor2` = evacuate | MQTT subscriber `alerts/#` | topic `alerts/fire/floor2`, `evacuate` |
 
 ## Diagram
 

@@ -6,23 +6,17 @@
 
 ## Example
 
-```
-Initial data:
-  orders.quorum           : x-queue-type = quorum, x-delivery-limit = 2
-  dead letters            : -> orders.poison
-  message                 : "poison order" (crashes the consumer every time)
+Timeline: `orders.quorum` has `x-delivery-limit = 2`; `poison order` crashes the consumer every time.
 
-Commands:
-  declare quorum queue with durable = false : 406 PRECONDITION_FAILED
-  delivery 1              : x-delivery-count = 0 (header absent) -> nack(requeue)
-  delivery 2              : x-delivery-count = 1 -> nack(requeue)
-  delivery 3              : x-delivery-count = 2 -> nack(requeue)
-  limit 2 exceeded        : dead-lettered
+| t | Event | `x-delivery-count` | Action |
+|---|---|---|---|
+| 0 | Declare a quorum queue with `durable = false` | | ❌ `406 PRECONDITION_FAILED` (quorum queues are always durable) |
+| 1 | Delivery 1 | absent (= 0) | `nack(requeue)` |
+| 2 | Delivery 2 | 1 | `nack(requeue)` |
+| 3 | Delivery 3 | 2 | `nack(requeue)` |
+| 4 | Count 3 > limit 2 | | dead-lettered → `orders.poison`, reason `delivery_limit` |
 
-Result:
-  orders.poison           : 'poison order', reason = delivery_limit
-  total deliveries        : 3 (1 + 2 redeliveries), not infinite
-```
+Total deliveries: **3** (1 + 2 redeliveries), not infinite.
 
 ## Diagram
 

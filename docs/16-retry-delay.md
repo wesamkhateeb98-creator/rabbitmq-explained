@@ -6,28 +6,19 @@
 
 ## Example
 
-```
-Initial data:
-  work                    : main queue
-  work.retry              : no consumer, DLX -> '' with key 'work'
-  work.parking-lot        : final failures
-  order-42                : fails on attempts 0 and 1, succeeds on 2
-  order-99                : always fails
-  backoff                 : 500 * 2^attempt ms, max 3 retries
+Timeline: backoff = `500 × 2^attempt` ms, max 3 retries. `order-42` fails on attempts 0 and 1; `order-99` always fails.
 
-Commands:
-     33 ms  order-42 attempt 0 : FAILED -> retry in 500 ms
-     40 ms  order-99 attempt 0 : FAILED -> retry in 500 ms
-    542 ms  order-42 attempt 1 : FAILED -> retry in 1000 ms
-    545 ms  order-99 attempt 1 : FAILED -> retry in 1000 ms
-   1555 ms  order-42 attempt 2 : OK
-   1555 ms  order-99 attempt 2 : FAILED -> retry in 2000 ms
-   3559 ms  order-99 attempt 3 : FAILED -> parking lot
+| t | Message | Attempt | Outcome | Next |
+|---|---|---|---|---|
+| 33 ms | order-42 | 0 | FAILED | `work.retry`, wait 500 ms |
+| 40 ms | order-99 | 0 | FAILED | `work.retry`, wait 500 ms |
+| 542 ms | order-42 | 1 | FAILED | wait 1000 ms |
+| 545 ms | order-99 | 1 | FAILED | wait 1000 ms |
+| 1555 ms | order-42 | 2 | **OK** | done |
+| 1555 ms | order-99 | 2 | FAILED | wait 2000 ms |
+| 3559 ms | order-99 | 3 | FAILED | **parking lot** (`work.parking-lot`) |
 
-Result:
-  order-42                : done after 500 + 1000 = 1500 ms of waiting
-  order-99                : parked after 500 + 1000 + 2000 = 3500 ms
-```
+Waiting time: order-42 = 500 + 1000 = **1500 ms**; order-99 = 500 + 1000 + 2000 = **3500 ms** before parking.
 
 ## Diagram
 

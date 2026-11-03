@@ -6,25 +6,17 @@
 
 ## Example
 
-```
-Initial data:
-  orders.ttl              : x-message-ttl = 1000 ms, DLX = 'dlx'
-  orders.rejected         : DLX = 'dlx'
-  orders.limited          : x-max-length = 1, DLX = 'dlx'
-  dlx (fanout) -> dead-letters
+Timeline: three ways to dead-letter into `dead-letters` (via fanout `dlx`).
 
-Commands:
-  publish A -> orders.ttl         : nobody reads it
-  publish B -> orders.rejected    : consumer nack(requeue: false)
-  publish C1, C2 -> orders.limited: C2 pushes out C1
-  wait 1500 ms
+| t | Event | Dead-lettered | Reason |
+|---|---|---|---|
+| 0 ms | Publish `A` → `orders.ttl` (`x-message-ttl = 1000`), nobody reads it | | |
+| ≈0 ms | Consumer `nack(requeue: false)` on `B` from `orders.rejected` | `B` | `rejected` |
+| ≈0 ms | Publish `C1`, `C2` → `orders.limited` (`x-max-length = 1`): `C2` pushes out `C1` | `C1` | `maxlen` |
+| 1000 ms | `A` expires | `A` | `expired` |
+| 1500 ms | Check queues | `dead-letters` = `[B, C1, A]` | |
 
-Result:
-  dead-letters            : B  reason=rejected  (immediately)
-  dead-letters            : C1 reason=maxlen    (immediately)
-  dead-letters            : A  reason=expired   (after 1000 ms)
-  orders.limited          : C2
-```
+`orders.limited` keeps `C2`.
 
 ## Diagram
 

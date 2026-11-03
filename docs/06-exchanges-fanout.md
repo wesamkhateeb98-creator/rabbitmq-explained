@@ -6,20 +6,14 @@
 
 ## Example
 
-```
-Initial data:
-  exchange 'signups'      : fanout
-  bound queues            : signup.email, signup.audit
+Before/after: exchange `signups` (fanout) bound to `signup.email` and `signup.audit`.
 
-Commands:
-  publish key ''          : "user 7 signed up"
-  publish key 'anything'  : "user 9 signed up"
+| Queue | Before | After publish `user 7` (key `''`) | After publish `user 9` (key `anything`) |
+|---|---|---|---|
+| `signup.email` | `[]` | `[user 7]` | `[user 7, user 9]` |
+| `signup.audit` | `[]` | `[user 7]` | `[user 7, user 9]` |
 
-Result:
-  signup.email            : user 7, user 9
-  signup.audit            : user 7, user 9
-  copies stored           : 2 messages x 2 queues = 4
-```
+The routing key is ignored. Copies stored: 2 messages × 2 queues = **4**.
 
 ## Diagram
 

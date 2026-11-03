@@ -6,18 +6,15 @@
 
 ## Example
 
-```
-Initial data:
-  queue 'hello'           : declared, empty
+Queue state at each step.
 
-Commands:
-  publish ''/'hello'      : "Hello World!" (12 bytes)
-  consume 'hello'         : autoAck = true
+| Step | Action | Queue `hello` |
+|---|---|---|
+| 1 | Declare `hello` | `[]` |
+| 2 | Publish `"Hello World!"` (12 bytes) to exchange `""`, key `hello` | `["Hello World!"]` |
+| 3 | Consume with `autoAck = true` → delivered with delivery tag `1` | `[]` (deleted on send) |
 
-Result:
-  received                : "Hello World!"
-  delivery tag            : 1 (first delivery on this channel)
-```
+Delivery tag `1` = first delivery on this channel.
 
 ## Diagram
 

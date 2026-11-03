@@ -8,26 +8,12 @@
 
 The same scenario on both: an `order-placed` event, three services that need it, and a new service added a day later.
 
-```
-Initial data:
-  event                       : order-placed {id: 42, total: 99.00}
-  consumers                   : billing, shipping, email
-  late consumer               : analytics (deployed 1 day later)
-
-Commands (RabbitMQ, classic queues):
-  publish to fanout "orders"  : 1 copy into each of 3 bound queues
-  billing/shipping/email ack  : 3 copies deleted
-  analytics binds new queue   : receives only events published from now on
-
-Commands (Kafka):
-  produce to topic "orders"   : appended once, partition 0, offset 1041
-  3 consumer groups read      : each group commits offset 1042
-  analytics reads from earliest: receives offset 1041 (still in the log)
-
-Result:
-  RabbitMQ                    : order 42 is gone after 3 acks; analytics cannot see it
-  Kafka                       : order 42 stays until retention expires (default 7 days); analytics replays it
-```
+| Step | RabbitMQ (classic queues) | Kafka |
+|---|---|---|
+| Publish `order-placed {id: 42, total: 99.00}` | Fanout `orders` → **3 copies**, one per bound queue | Appended **once** to topic `orders`, partition 0, offset 1041 |
+| billing, shipping, email read it | Each acks → its copy is **deleted** | Each consumer group commits offset 1042; message stays |
+| 1 day later: analytics is added | Binds a new queue → gets only **new** events | Reads from earliest → gets offset 1041 |
+| Order 42 after reads | Gone after 3 acks | Kept until retention (default 7 days) |
 
 To get replay on RabbitMQ, use a **stream** ([19 · Streams](19-streams.md)). It works like the Kafka column: one append-only copy that each consumer reads from an offset.
 

@@ -12,25 +12,23 @@
 
 ## Example
 
-```
-Initial data:
-  sac.orders              : x-single-active-consumer = true, consumers A and B
-  prio.jobs               : x-max-priority = 10
-  timeout.jobs            : x-consumer-timeout = 5000 ms
+Single active consumer (`sac.orders`) and priority (`prio.jobs`, `x-max-priority = 10`):
 
-Commands:
-  publish order-1..3      : all to consumer-A (B is idle)
-  consumer-A stops        : B becomes active
-  publish order-4..6      : all to consumer-B
-  publish (priority)      : report(1), password reset(9), invoice(5), 2FA code(9)
-  consume prio.jobs       : password reset(9), 2FA code(9), invoice(5), report(1)
-  consume without ack     : at 3 ms got 'slow job'
-                            at 60012 ms channel closed: 406 PRECONDITION_FAILED, timed out (5000 ms)
+| Feature | In | Out |
+|---|---|---|
+| Single active consumer | `order-1..3` | all → consumer-A (B idle) |
+| | consumer-A stops, `order-4..6` | all → consumer-B |
+| Priority | report(1), password reset(9), invoice(5), 2FA code(9) | password reset(9), 2FA code(9), invoice(5), report(1) |
 
-Result:
-  timeout.jobs            : 1 message ready again
-  real timeout            : 60 s, not 5 s (the broker checks about once per minute)
-```
+Consumer timeout timeline (`timeout.jobs`, `x-consumer-timeout = 5000` ms, no ack):
+
+| t | Event |
+|---|---|
+| 3 ms | Got `slow job`, never acked |
+| 5000 ms | Timeout reached, but nothing happens yet |
+| 60012 ms | Channel closed: `406 PRECONDITION_FAILED`, timed out (5000 ms); `slow job` is ready again |
+
+The real timeout is 60 s, not 5 s: the broker checks about once per minute.
 
 ## Diagram
 

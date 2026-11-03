@@ -10,30 +10,25 @@
 
 ## Example
 
-```
-Initial data:
-  queue 'policy.orders'   : no arguments
+Part A, before/after: queue `policy.orders` has no arguments; policies add them.
 
-Commands (Part A, policies):
-  policy orders-limits    : ^policy\.  max-length 3, message-ttl 2000
-  publish 5               : ready = 3 (max-length drops the 2 oldest)
-  wait 2.5 s              : ready = 0 (TTL 2 s)
-  operator policy ops-cap : max-length 2
-  effective               : max-length 2, message-ttl 2000
-  publish 5               : ready = 2
+| Step | Effective limits | ready |
+|---|---|---|
+| Policy `orders-limits` (`^policy\.`): max-length 3, message-ttl 2000 | max-length 3, ttl 2000 | 0 |
+| Publish 5 | | 3 (2 oldest dropped) |
+| Wait 2.5 s | | 0 (TTL 2 s) |
+| Operator policy `ops-cap`: max-length 2 | max-length **2**, ttl 2000 | 0 |
+| Publish 5 | | 2 |
 
-Commands (Part B, alternate exchange):
-  ae.orders (direct, alternate-exchange = ae.unrouted)
-  publish order.created   : -> ae.billing
-  publish order.refunded  : no binding -> ae.unrouted -> ae.unrouted.q
+Parts B and C, routing table:
 
-Commands (Part C, exchange-to-exchange):
-  e2e.all --[eu.#]--> e2e.eu --[#]--> e2e.eu.q
-  publish eu.order.created, us.order.created, eu.payment.failed
-
-Result:
-  e2e.eu.q                : eu.order.created, eu.payment.failed
-```
+| Setup | Publish key | Path | Ends in |
+|---|---|---|---|
+| `ae.orders` (direct, `alternate-exchange = ae.unrouted`) | `order.created` | binding matches | `ae.billing` |
+| same | `order.refunded` | no binding → alternate exchange | `ae.unrouted.q` |
+| `e2e.all --[eu.#]--> e2e.eu --[#]--> e2e.eu.q` | `eu.order.created` | both bindings match | `e2e.eu.q` |
+| same | `us.order.created` | `eu.#` fails | dropped |
+| same | `eu.payment.failed` | both bindings match | `e2e.eu.q` |
 
 ## Diagram
 

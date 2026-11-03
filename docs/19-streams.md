@@ -6,20 +6,19 @@
 
 ## Example
 
-```
-Initial data:
-  stream 'events'         : empty
+Layout: stream `events` is an append-only log; each consumer only moves its own offset.
 
-Commands:
-  append                  : event-0 .. event-4 (offsets 0..4)
-  consumer A offset=first : reads event-0@0 .. event-4@4
-  consumer B offset=3     : reads event-3@3, event-4@4
-  consumer C offset=first : reads event-0@0 .. event-4@4 again
-
-Result:
-  messages stored         : 5 (one copy, read 3 times)
-  messages removed by reads : 0
 ```
+offset:      0         1         2         3         4
+          ┌─────────┬─────────┬─────────┬─────────┬─────────┐
+events    │ event-0 │ event-1 │ event-2 │ event-3 │ event-4 │   5 messages, 1 copy
+          └─────────┴─────────┴─────────┴─────────┴─────────┘
+A first   ▲────────────────────────────────────────────────▶  reads 0..4
+B 3                                     ▲──────────────────▶  reads 3..4
+C first   ▲────────────────────────────────────────────────▶  reads 0..4 again
+```
+
+Messages removed by reads: **0**.
 
 ## Diagram
 

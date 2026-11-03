@@ -6,22 +6,16 @@
 
 ## Example
 
-```
-Initial data:
-  connection 'demo-03'    : amqp://localhost:5672
+Before/after: one channel error on connection `demo-03` (`amqp://localhost:5672`).
 
-Commands:
-  open channel            : #1
-  open channel            : #2
-  open channel            : #3
-  channel #2 passive-declares 'does-not-exist' : 404 NOT_FOUND
+| | Before | Action | After |
+|---|---|---|---|
+| Channel #1 | open | none | **open** |
+| Channel #2 | open | passive-declare `does-not-exist` → `404 NOT_FOUND` | **closed** by the broker |
+| Channel #3 | open | none | **open** |
+| Connection | open | none | **open** |
 
-Result:
-  channel #1 open         : True
-  channel #2 open         : False (closed by the broker)
-  channel #3 open         : True
-  connection open         : True
-```
+A channel error kills only that channel; the TCP connection and its other channels stay up.
 
 ## Diagram
 

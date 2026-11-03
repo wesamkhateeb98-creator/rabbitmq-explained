@@ -6,25 +6,26 @@
 
 ## Example
 
-```
-Initial data:
-  queue 'jobs'            : job-1 .. job-5
+Timeline, Part A: prefetch = 2, the consumer never acks.
 
-Commands (Part A, prefetch = 2, consumer never acks):
-  deliveries              : job-1, job-2 (then the broker stops sending)
-  queue stats             : ready = 3, unacked = 2
-  close channel           : unacked returned -> ready = 5
+| t | Event | ready | unacked |
+|---|---|---|---|
+| 0 | Publish `job-1..job-5` | 5 | 0 |
+| 1 | Broker delivers `job-1`, `job-2`, then stops (unacked = prefetch) | 3 | 2 |
+| 2 | Close the channel → unacked messages return to the queue | 5 | 0 |
 
-Commands (Part B, prefetch = 2, ack / nack):
-  job-1, job-2            : redelivered = True -> ack
-  job-3 (1st try)         : fails -> nack(requeue: true)
-  job-4, job-5            : ack
-  job-3 (2nd try)         : redelivered = True -> ack
+Part B: prefetch = 2, ack on success, `job-3` fails once.
 
-Result:
-  ready                   : 0
-  messages lost           : 0
-```
+| Delivery | Redelivered | Action |
+|---|---|---|
+| `job-1` | True (from Part A) | ack |
+| `job-2` | True (from Part A) | ack |
+| `job-3` | False | **FAILED** → `nack(requeue: true)` |
+| `job-4` | False | ack |
+| `job-5` | False | ack |
+| `job-3` | True | ack |
+
+Result: ready = 0, messages lost = 0.
 
 ## Diagram
 

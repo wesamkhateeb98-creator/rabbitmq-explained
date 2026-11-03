@@ -6,22 +6,15 @@
 
 ## Example
 
-```
-Initial data:
-  durable-queue           : durable = true
-  transient-queue         : durable = false
+Before/after a broker restart (`docker compose restart rabbitmq`).
 
-Commands:
-  publish -> durable-queue   : "persistent message" (Persistent = true)
-  publish -> durable-queue   : "transient message"  (Persistent = false)
-  publish -> transient-queue : "persistent message" (Persistent = true)
-  docker compose restart rabbitmq
+| Queue (`durable`) | Message (`Persistent`) | Before restart | After restart |
+|---|---|---|---|
+| `durable-queue` (true) | `persistent message` (true) | ✅ | ✅ survived |
+| `durable-queue` (true) | `transient message` (false) | ✅ | ❌ lost |
+| `transient-queue` (false) | `persistent message` (true) | ✅ | ❌ queue gone (`404 NOT_FOUND`) |
 
-Result:
-  durable-queue           : exists, [persistent message]
-  transient-queue         : gone (404 NOT_FOUND)
-  survived                : 1 of 3 messages
-```
+Rule: survives = durable queue **and** persistent message. Survived: **1 of 3**.
 
 ## Diagram
 

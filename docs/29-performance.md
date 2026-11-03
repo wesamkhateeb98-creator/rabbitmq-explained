@@ -8,30 +8,31 @@
 
 Measured on this repo's setup: 4 CPU cores, RabbitMQ 4.1.8 in Docker on the same host, .NET 10, 100-byte messages unless noted.
 
-```
-Initial data:
-  messages                : 20 000 per scenario (2 000 for "await each confirm")
-  body                    : 100 B (10 KB in scenario 6)
+Publish, 20 000 messages per scenario (2 000 for "await each confirm"):
 
-Commands (publish):
-  1) classic, transient, no confirms              : 33,913 msg/s
-  2) classic, persistent, await each confirm      :    867 msg/s
-  3) classic, persistent, confirm windows of 1000 : 31,080 msg/s
-  4) quorum,  persistent, confirm windows of 1000 : 14,101 msg/s
-  5) stream,  persistent, confirm windows of 1000 : 22,447 msg/s
-  6) classic, persistent, windows, 10 KB body     : 18,327 msg/s (≈ 183 MB/s)
+| # | Queue | Persistent | Confirms | Body | msg/s |
+|---|---|---|---|---|---|
+| 1 | classic | no | none | 100 B | 33,913 |
+| 2 | classic | yes | await each | 100 B | 867 |
+| 3 | classic | yes | windows of 1000 | 100 B | 31,080 |
+| 4 | quorum | yes | windows of 1000 | 100 B | 14,101 |
+| 5 | stream | yes | windows of 1000 | 100 B | 22,447 |
+| 6 | classic | yes | windows of 1000 | 10 KB | 18,327 (≈ 183 MB/s) |
 
-Commands (consume, manual ack):
-  prefetch 1              :  2,358 msg/s
-  prefetch 10             :  9,618 msg/s
-  prefetch 100            : 13,706 msg/s
-  prefetch 1000           : 17,115 msg/s
+Consume, manual ack:
 
-Result:
-  confirm windows vs one-by-one : 31,080 / 867  ≈ 36x faster
-  quorum vs classic             : 14,101 / 31,080 ≈ 0.45x (the price of replication)
-  prefetch 100 vs 1             : 13,706 / 2,358 ≈ 5.8x faster
-```
+| Prefetch | msg/s |
+|---|---|
+| 1 | 2,358 |
+| 10 | 9,618 |
+| 100 | 13,706 |
+| 1000 | 17,115 |
+
+| Choice | Ratio |
+|---|---|
+| Confirm windows vs one-by-one | 31,080 / 867 ≈ **36×** faster |
+| Quorum vs classic | 14,101 / 31,080 ≈ **0.45×** (the price of replication) |
+| Prefetch 100 vs 1 | 13,706 / 2,358 ≈ **5.8×** faster |
 
 ## Diagram
 

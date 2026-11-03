@@ -6,18 +6,15 @@
 
 ## Example
 
-```
-Initial data:
-  queue 'inbox'           : declared (auto-bound to "" with key 'inbox')
+Routing table: queue `inbox` is declared, so the default exchange `""` auto-binds it with key `inbox`.
 
-Commands:
-  publish '' key 'inbox'  : routed to queue 'inbox'
-  publish '' key 'nobody' : no queue named 'nobody' -> returned 312 NO_ROUTE
-  bind 'inbox' to ''      : 403 ACCESS_REFUSED
+| Command | Result |
+|---|---|
+| Publish to `""`, key `inbox`, body `hi inbox` | ✅ routed to queue `inbox` |
+| Publish to `""`, key `nobody` | ❌ no queue named `nobody` → returned `312 NO_ROUTE` |
+| Bind `inbox` to `""` | ❌ `403 ACCESS_REFUSED` (the default exchange's bindings are fixed) |
 
-Result:
-  inbox                   : 'hi inbox'
-```
+Result: `inbox` holds `hi inbox`.
 
 ## Diagram
 

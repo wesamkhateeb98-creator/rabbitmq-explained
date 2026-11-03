@@ -6,19 +6,14 @@
 
 ## Example
 
-```
-Initial data:
-  balance                 : 0
-  messages                : pay-1 = 100, pay-2 = 50, pay-1 = 100 (resent after a lost confirm)
+Before/after: `pay-1` is resent after a lost confirm.
 
-Commands:
-  naive consumer          : 0 + 100 + 50 + 100
-  idempotent consumer     : 0 + 100 + 50, then pay-1 seen before -> skip
-
-Result:
-  naive balance           : 250 (wrong, charged twice)
-  idempotent balance      : 150 (correct)
-```
+| Message | Naive balance | Idempotent: seen ids | Idempotent balance |
+|---|---|---|---|
+| start | 0 | `{}` | 0 |
+| `pay-1` = 100 | 100 | `{pay-1}` | 100 |
+| `pay-2` = 50 | 150 | `{pay-1, pay-2}` | 150 |
+| `pay-1` = 100 (resent) | **250** ❌ charged twice | `pay-1` already seen → skip | **150** ✅ |
 
 ## Diagram
 

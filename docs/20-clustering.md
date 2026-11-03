@@ -6,24 +6,17 @@
 
 ## Example
 
-```
-Initial data:
-  nodes                   : rabbit1 (:5681), rabbit2 (:5682), rabbit3 (:5683)
-  queue                   : cluster-orders, quorum, 3 replicas
+Failure timeline: quorum queue `cluster-orders` with 3 replicas.
 
-Commands:
-  client connects         : amqp://localhost:5683 (picked from a shuffled list)
-  publish                 : order-1..order-3 (confirmed by a majority)
-  replicas                : rabbit1 follower, rabbit2 follower, rabbit3 LEADER
-  docker stop rabbit3     : the leader dies
-  replicas                : rabbit1 follower, rabbit2 LEADER (new), rabbit3 nodedown
-  client connects         : amqp://localhost:5681
-  consume                 : order-1, order-2, order-3
+| t | Event | rabbit1 (:5681) | rabbit2 (:5682) | rabbit3 (:5683) |
+|---|---|---|---|---|
+| 0 | Client connects to `:5683` (picked from a shuffled list) | follower | follower | **LEADER** |
+| 1 | Publish `order-1..order-3`, confirmed by a majority | follower | follower | **LEADER** |
+| 2 | `docker stop rabbit3` | follower | follower | down |
+| 3 | Raft elects a new leader | follower | **LEADER** | nodedown |
+| 4 | Client reconnects to `:5681`, consumes `order-1`, `order-2`, `order-3` | follower | **LEADER** | nodedown |
 
-Result:
-  messages lost           : 0
-  nodes still running     : 2 of 3 (a majority, so the queue stays available)
-```
+2 of 3 nodes = a majority, so the queue stays available. Messages lost: **0**.
 
 ## Diagram
 

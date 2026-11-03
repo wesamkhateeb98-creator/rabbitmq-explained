@@ -6,28 +6,16 @@
 
 ## Example
 
-```
-Initial data:
-  exchange 'events'       : topic
-  eu-orders               : order.eu.*
-  created                 : order.*.created
-  us-everything           : order.us.#
-  audit                   : #
+Match table: exchange `events` (topic). `*` = exactly one word, `#` = zero or more words.
 
-Commands:
-  publish                 : order.eu.created
-  publish                 : order.eu.cancelled
-  publish                 : order.us.created
-  publish                 : order.us.created.priority
-  publish                 : payment.eu.failed
-
-Result:
-  eu-orders               : order.eu.created, order.eu.cancelled
-  created                 : order.eu.created, order.us.created
-  us-everything           : order.us.created, order.us.created.priority
-  audit                   : all 5
-  order.us.created.priority in 'created'? : no ('*' is one word, 'created.priority' is two)
-```
+| Routing key | `eu-orders` `order.eu.*` | `created` `order.*.created` | `us-everything` `order.us.#` | `audit` `#` |
+|---|---|---|---|---|
+| `order.eu.created` | ✅ | ✅ | ❌ | ✅ |
+| `order.eu.cancelled` | ✅ | ❌ | ❌ | ✅ |
+| `order.us.created` | ❌ | ✅ | ✅ | ✅ |
+| `order.us.created.priority` | ❌ | ❌ `*` can't cover 2 words | ✅ | ✅ |
+| `payment.eu.failed` | ❌ | ❌ | ❌ | ✅ |
+| **Total** | 2 | 2 | 2 | 5 |
 
 ## Diagram
 

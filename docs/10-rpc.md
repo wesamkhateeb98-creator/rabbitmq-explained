@@ -6,19 +6,18 @@
 
 ## Example
 
-```
-Initial data:
-  server queue            : rpc_queue (computes fib(n))
-  client reply queue      : amq.gen-Q6A7... (server-named, exclusive)
+Before/after: the client's `pending` map (`correlation_id → waiting request`). Replies arrive on the exclusive queue `amq.gen-Q6A7...`.
 
-Commands:
-  req-1 fib(10)           : server replies 55
-  req-2 fib(20)           : server replies 6765
-  req-3 fib(30)           : server replies 832040
+| Step | Message | `pending` after |
+|---|---|---|
+| 1 | Client → `rpc_queue`: `req-1` fib(10), `reply_to = amq.gen-Q6A7...` | `{req-1}` |
+| 2 | Server → `amq.gen-Q6A7...`: `correlation_id = req-1`, body `55` | `{}` (req-1 matched) |
+| 3 | Client → `rpc_queue`: `req-2` fib(20) | `{req-2}` |
+| 4 | Server → reply `req-2`, body `6765` | `{}` |
+| 5 | Client → `rpc_queue`: `req-3` fib(30) | `{req-3}` |
+| 6 | Server → reply `req-3`, body `832040` | `{}` |
 
-Result:
-  replies matched by correlation_id : 3 / 3
-```
+Replies matched by `correlation_id`: **3 / 3**.
 
 ## Diagram
 

@@ -6,23 +6,14 @@
 
 ## Example
 
-```
-Initial data:
-  exchange 'documents'    : headers
-  pdf-reports             : x-match=all, format=pdf, type=report
-  pdf-or-urgent           : x-match=any, format=pdf, priority=high
+Match table: exchange `documents` (headers). `x-match=all` needs every header; `x-match=any` needs one.
 
-Commands:
-  publish monthly.pdf     : format=pdf, type=report
-  publish invoice-1.pdf   : format=pdf, type=invoice
-  publish alert.csv       : format=csv, priority=high
-  publish data.csv        : format=csv, type=report
-
-Result:
-  pdf-reports             : monthly.pdf
-  pdf-or-urgent           : monthly.pdf, invoice-1.pdf, alert.csv
-  data.csv                : matched no binding -> dropped
-```
+| Message | Headers | `pdf-reports` all: `format=pdf`, `type=report` | `pdf-or-urgent` any: `format=pdf`, `priority=high` |
+|---|---|---|---|
+| `monthly.pdf` | `format=pdf`, `type=report` | ✅ both match | ✅ `format` |
+| `invoice-1.pdf` | `format=pdf`, `type=invoice` | ❌ `type` differs | ✅ `format` |
+| `alert.csv` | `format=csv`, `priority=high` | ❌ | ✅ `priority` |
+| `data.csv` | `format=csv`, `type=report` | ❌ `format` differs | ❌ → dropped |
 
 ## Diagram
 
